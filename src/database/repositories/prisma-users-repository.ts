@@ -2,7 +2,7 @@ import {
   FindByEmailOrUsernameParameters,
   UsersRepository,
 } from '@/core/repositories/users-repository'
-import { User } from '@/entities/user'
+import { User } from '@/domain/entities/user'
 import { PrismaService } from '../prisma.service'
 import { Injectable } from '@nestjs/common'
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper'

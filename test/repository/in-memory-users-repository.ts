@@ -2,7 +2,7 @@ import {
   FindByEmailOrUsernameParameters,
   UsersRepository,
 } from '@/core/repositories/users-repository'
-import { User } from '@/entities/user'
+import { User } from '@/domain/entities/user'
 
 export class InMemoryUsersRepository implements UsersRepository {
   public items: User[] = []

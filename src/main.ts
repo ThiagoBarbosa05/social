@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ConfigService } from '@nestjs/config'
 import { Env } from './env/env'
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true })
+
+  app.use(cookieParser())
 
   const configService: ConfigService<Env, true> = app.get(ConfigService)
   const port = configService.get('PORT', { infer: true })

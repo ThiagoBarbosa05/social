@@ -5,23 +5,31 @@ import {
   Controller,
   HttpCode,
   Post,
+  Res,
 } from '@nestjs/common'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import {
   CreateUserBodySchema,
   createUserBodySchema,
 } from '../validation-schemas/user-schemas'
-import { CreateUserUseCase } from '@/use-cases/users/create-user'
-import { UserAlreadyExistsError } from '@/use-cases/errors/use-case-error'
+import { CreateUserUseCase } from '@/domain/use-cases/users/create-user'
+import { UserAlreadyExistsError } from '@/domain/use-cases/errors/use-case-error'
+import { IsPublic } from '../auth/public'
+import { Response } from 'express'
 
 const createUserValidationPipe = new ZodValidationPipe(createUserBodySchema)
 
 @Controller('/users')
 export class UsersController {
   constructor(private createUser: CreateUserUseCase) {}
+
   @Post()
+  @IsPublic()
   @HttpCode(201)
-  async create(@Body(createUserValidationPipe) body: CreateUserBodySchema) {
+  async create(
+    @Body(createUserValidationPipe) body: CreateUserBodySchema,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     const { attachmentId, email, name, password, username } = body
 
     const result = await this.createUser.execute({
@@ -42,5 +50,14 @@ export class UsersController {
           throw new BadRequestException(error.message)
       }
     }
+
+    const { accessToken } = result.value
+
+    response.cookie('access_token', accessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+    })
+
+    return { accessToken }
   }
 }

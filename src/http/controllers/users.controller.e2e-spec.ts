@@ -21,18 +21,22 @@ describe('Create Account (E2E)', () => {
   })
 
   test('[POST] /users', async () => {
-    // const response = await request(app.getHttpServer()).post('/users').send({
-    //   email: 'john@example.com',
-    //   password: 'example',
-    //   name: 'John Doe',
-    //   username: 'John Doe',
-    // })
-    // expect(response.statusCode).toBe(201)
-    // const userOnDatabase = await prisma.user.findUnique({
-    //   where: {
-    //     email: 'john@example.com',
-    //   },
-    // })
-    // expect(userOnDatabase).toBeTruthy()
+    const response = await request(app.getHttpServer()).post('/users').send({
+      email: 'john@example.com',
+      password: 'example',
+      name: 'John Doe',
+      username: 'John Doe',
+    })
+    expect(response.statusCode).toBe(201)
+    const userOnDatabase = await prisma.user.findUnique({
+      where: {
+        email: 'john@example.com',
+      },
+    })
+
+    expect(userOnDatabase).toBeTruthy()
+    expect(response.body).toMatchObject({
+      accessToken: expect.any(String),
+    })
   })
 })

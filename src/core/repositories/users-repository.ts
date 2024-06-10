@@ -1,8 +1,8 @@
-import { User } from '@/entities/user'
+import { User } from '@/domain/entities/user'
 
 export interface FindByEmailOrUsernameParameters {
   email: string
-  username: string
+  username?: string
 }
 
 export abstract class UsersRepository {

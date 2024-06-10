@@ -1,10 +1,11 @@
 import { Either, left, right } from '@/core/either'
 import { UsersRepository } from '@/core/repositories/users-repository'
 import { BcryptHasher } from '@/cryptography/bcrypt-hasher'
-import { User } from '@/entities/user'
+import { User } from '@/domain/entities/user'
 import { UserAlreadyExistsError } from '../errors/use-case-error'
 import { Injectable } from '@nestjs/common'
-import { Username } from '@/entities/value-objects/username'
+import { Username } from '@/domain/entities/value-objects/username'
+import { Encrypter } from '@/domain/cryptography/encrypter'
 
 type CreateUserUseCaseInput = {
   name: string
@@ -18,6 +19,7 @@ type CreateUserUseCaseOutput = Either<
   UserAlreadyExistsError,
   {
     user: User
+    accessToken: string
   }
 >
 
@@ -26,6 +28,7 @@ export class CreateUserUseCase {
   constructor(
     private userRepository: UsersRepository,
     private hashGenerator: BcryptHasher,
+    private encrypter: Encrypter,
   ) {}
 
   async execute({
@@ -56,8 +59,13 @@ export class CreateUserUseCase {
 
     await this.userRepository.create(user)
 
+    const accessToken = await this.encrypter.encrypt({
+      sub: user.id.toString(),
+    })
+
     return right({
       user,
+      accessToken,
     })
   }
 }

@@ -4,6 +4,7 @@ import { envSchema } from './env/env'
 import { HttpModule } from './http/http.module'
 import { EnvModule } from './env/env.module'
 import { PrismaService } from './database/prisma.service'
+import { AuthModule } from './http/auth/auth.module'
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { PrismaService } from './database/prisma.service'
       validate: (env) => envSchema.parse(env),
       isGlobal: true,
     }),
-
+    AuthModule,
     HttpModule,
     EnvModule,
   ],
