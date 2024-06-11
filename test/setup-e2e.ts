@@ -30,7 +30,8 @@ beforeAll(async () => {
     const databaseURL = generateUniqueDatabaseURL(schemaId)
 
     process.env.DATABASE_URL = databaseURL
-    execSync('pnpm prisma migrate deploy')
+
+    execSync('pnpm prisma migrate deploy', { stdio: 'inherit' })
   } catch (err) {
     console.log(err)
   }
