@@ -28,11 +28,11 @@ model User {
 }
 
 model Attachment {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   url    String
   title  String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @unique
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

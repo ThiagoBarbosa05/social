@@ -6,10 +6,13 @@ import { DatabaseModule } from '@/database/database.module'
 import { CryptographyModule } from '@/cryptography/cryptography.module'
 import { AuthenticateUseCase } from '@/domain/use-cases/auth/authenticate'
 import { AuthController } from './controllers/auth.controller'
+import { AttachmentController } from './controllers/attachment.controller'
+import { StorageModule } from '@/storage/storage.module'
+import { UploadAttachmentUseCase } from '@/domain/use-cases/attachment/upload-attachment'
 
 @Module({
-  imports: [EnvModule, DatabaseModule, CryptographyModule],
-  providers: [CreateUserUseCase, AuthenticateUseCase],
-  controllers: [UsersController, AuthController],
+  imports: [EnvModule, DatabaseModule, CryptographyModule, StorageModule],
+  providers: [CreateUserUseCase, AuthenticateUseCase, UploadAttachmentUseCase],
+  controllers: [UsersController, AuthController, AttachmentController],
 })
 export class HttpModule {}

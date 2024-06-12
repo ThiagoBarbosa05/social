@@ -34,7 +34,21 @@ export class UploadAttachmentUseCase {
       return left(new InvalidAttachmentTypeError(fileType))
     }
 
-    const { url } = await this.uploader.upload({ body, fileName, fileType })
+    const fileNameNormalized = fileName
+      .normalize('NFKD')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/_/g, '-')
+      .replace(/--+/g, '-')
+      .replace(/-$/g, '')
+
+    const { url } = await this.uploader.upload({
+      body,
+      fileName: fileNameNormalized,
+      fileType,
+    })
 
     const attachment = Attachment.create({
       title: fileName,

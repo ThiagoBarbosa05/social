@@ -1,5 +1,3 @@
-import { EnvService } from '@/env/env.service'
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import {
   Controller,
   FileTypeValidator,
@@ -11,32 +9,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { IsPublic } from '../auth/public'
+import { UploadAttachmentUseCase } from '@/domain/use-cases/attachment/upload-attachment'
 
 @Controller('/attachment')
 export class AttachmentController {
-  constructor(private envService: EnvService) {}
+  constructor(private uploadAttachment: UploadAttachmentUseCase) {}
   @Get()
+  @IsPublic()
   async find() {
-    const client = new S3Client({
-      endpoint: this.envService.get('CLOUDFARE_URL'),
-      region: 'auto',
-      credentials: {
-        accessKeyId: this.envService.get('CLOUDFARE_ACCESS_KEY_ID'),
-        secretAccessKey: this.envService.get('CLOUDFARE_SECRET_ACCESS_KEY'),
-      },
-    })
-
-    const res = await client.send(
-      new GetObjectCommand({
-        Bucket: 'fast-feet',
-        Key: '79dc202b-6ac5-4523-9b24-ce2845b2d7e3-nlw.png',
-      }),
-    )
-
     return 'attachment'
   }
 
   @UseInterceptors(FileInterceptor('file'))
+  @IsPublic()
   @Post()
   async upload(
     @UploadedFile(
@@ -51,6 +37,12 @@ export class AttachmentController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(file)
+    const result = await this.uploadAttachment.execute({
+      fileName: file.originalname,
+      fileType: file.mimetype,
+      body: file.buffer,
+    })
+
+    return result
   }
 }
